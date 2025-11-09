@@ -856,7 +856,7 @@
                 <span class="value" id="statAmmo">—</span>
               </div>
               <div class="stat">
-                <span class="label">Magazine</span>
+                <span class="label">Magazine (Std/Ext)</span>
                 <span class="value" id="statMag">—</span>
               </div>
             </div>
@@ -1377,7 +1377,7 @@
     document.getElementById('statDamage').textContent = s.damage;
     document.getElementById('statFire').textContent = s.fire + ' RPM';
     document.getElementById('statAmmo').textContent = s.ammo;
-    document.getElementById('statMag').textContent = `${s.magStd} / ${s.magExt}`;
+    document.getElementById('statMag').textContent = `Std: ${s.magStd}  |  Ext: ${s.magExt}`;
     const overlay = document.getElementById('statsOverlay');
     overlay.classList.add('open');
     overlay.removeAttribute('aria-hidden');
