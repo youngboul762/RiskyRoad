@@ -1192,8 +1192,20 @@
     'PMAG Drum Magazine': { type:'Magazine', capacity:'60 rounds', compat:'5.56 AR/M4 (STANAG)', notes:'High Capacity' }
   };
 
+  const DRUG_INFO = {
+    'Tris Pint': { type:'Opioid Syrup', effect:'Sedative / Euphoric', form:'Liquid', notes:'Commonly mixed; impairing' },
+    'Superman Pill': { type:'Pill', effect:'Stimulant', form:'Tablet', notes:'High intensity' },
+    'Wockhardt Pint': { type:'Opioid Syrup', effect:'Sedative', form:'Liquid', notes:'Prescription codeine/promethazine' },
+    'Quagen Pint': { type:'Opioid Syrup', effect:'Sedative', form:'Liquid', notes:'Similar to Wockhardt' },
+    'Green Pint': { type:'Opioid Syrup', effect:'Sedative', form:'Liquid', notes:'Flavor variant' },
+    'Pai Pint': { type:'Opioid Syrup', effect:'Sedative', form:'Liquid', notes:'Variant' }
+  };
+
   function isAttachmentName(name){
     try{ return Array.isArray(ATTACHMENTS) && ATTACHMENTS.some(x => x && x[0] === name); }catch{ return false; }
+  }
+  function isDrugName(name){
+    try{ return Array.isArray(DRUGS) && DRUGS.some(x => x && x[0] === name); }catch{ return false; }
   }
 
   function setStatField(valueId, labelText, valueText, valueClass){
@@ -1427,6 +1439,12 @@
       setStatField('statAmmo','Compatibility', a.compat || '-');
       if(a.capacity){ setStatField('statMag','Capacity', a.capacity); }
       else { setStatField('statMag','Notes', a.notes || '-'); }
+    } else if(isDrugName(name)){
+      const d = DRUG_INFO[name] || { type:'Drug', effect:'—', form:'—', notes:'—' };
+      setStatField('statDamage','Type', d.type);
+      if(effectCard){ effectCard.style.display = ''; setStatField('statFire','Effect', d.effect || '—'); }
+      setStatField('statAmmo','Form', d.form || '—');
+      setStatField('statMag','Notes', d.notes || '—');
     } else {
       const s = getStats(name);
       setStatField('statDamage','Damage', String(s.damage), 'gold');
@@ -1439,6 +1457,7 @@
     const overlay = document.getElementById('statsOverlay');
     overlay.classList.add('open');
     overlay.removeAttribute('aria-hidden');
+    document.body.classList.add('modal-open');
   }
   function closeStatsOverlay(){
     const overlay = document.getElementById('statsOverlay');
@@ -1523,9 +1542,13 @@
     const list = Array.isArray(DRUGS) ? DRUGS : [];
     list.forEach(([name, rarity, key]) => {
       const card = document.createElement('div');
-      card.className = `gallery-card ${rarity || 'common'}`;
+      card.className = `gallery-card ${rarity || 'common'} clickable`;
       const src = IMAGES[name] || IMAGES[key] || FALLBACK_IMG;
-      card.innerHTML = `<div class=\"name\">${name}</div><img src=\"${src}\" alt=\"${name}\">`;
+      const hint = '<div class=\"stats-hint\">Click for stats</div>';
+      card.innerHTML = `<div class=\"name\">${name}</div><img src=\"${src}\" alt=\"${name}\">${hint}`;
+      card.setAttribute('tabindex','0');
+      card.addEventListener('click', ()=> openStats(name, rarity || 'common', src));
+      card.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); openStats(name, rarity || 'common', src); } });
       drugsGridStage.appendChild(card);
     });
   }
