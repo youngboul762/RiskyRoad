@@ -834,35 +834,7 @@
             <div id="t1GridStage" class="t1-grid"></div>
           </section>
         </div>
-        <!-- Weapon stats overlay (Tier 1) -->
-        <div id="statsOverlay" class="stats-overlay" aria-modal="true" role="dialog" aria-labelledby="statsTitle" aria-hidden="true">
-          <div class="stats-card" role="document">
-            <div class="stats-header">
-              <div class="stats-title" id="statsTitle">Weapon</div>
-              <div class="stats-rarity" id="statsRarity">Common</div>
-            </div>
-            <div class="stats-preview"><img id="statsImage" alt=""></div>
-            <div class="stats-grid">
-              <div class="stat">
-                <span class="label">Damage</span>
-                <span class="value gold" id="statDamage">—</span>
-              </div>
-              <div class="stat">
-                <span class="label">Fire Rate</span>
-                <span class="value green" id="statFire">—</span>
-              </div>
-              <div class="stat">
-                <span class="label">Ammo</span>
-                <span class="value" id="statAmmo">—</span>
-              </div>
-              <div class="stat">
-                <span class="label">Magazine Capacity</span>
-                <span class="value" id="statMag">—</span>
-              </div>
-            </div>
-            <button id="closeStats" class="close" aria-label="Close">Close</button>
-          </div>
-        </div>
+        
       </div>
       <div id="viewT2" class="view">
         <div class="grid">
@@ -920,8 +892,39 @@
         <button class="close" id="closeDrugs">Close</button>
       </div>
       <div id="drugsGrid" class="t1-grid"></div>
-    </div>
   </div>
+</div>
+
+<!-- Global Weapon stats overlay (for Tier 1/2) -->
+<div id="statsOverlay" class="stats-overlay" aria-modal="true" role="dialog" aria-labelledby="statsTitle" aria-hidden="true">
+  <div class="stats-card" role="document">
+    <div class="stats-header">
+      <div class="stats-title" id="statsTitle">Weapon</div>
+      <div class="stats-rarity" id="statsRarity">Common</div>
+    </div>
+    <div class="stats-preview"><img id="statsImage" alt=""></div>
+    <div class="stats-grid">
+      <div class="stat">
+        <span class="label">Damage</span>
+        <span class="value gold" id="statDamage">-</span>
+      </div>
+      <div class="stat">
+        <span class="label">Fire Rate</span>
+        <span class="value green" id="statFire">-</span>
+      </div>
+      <div class="stat">
+        <span class="label">Ammo</span>
+        <span class="value" id="statAmmo">-</span>
+      </div>
+      <div class="stat">
+        <span class="label">Magazine Capacity</span>
+        <span class="value" id="statMag">-</span>
+      </div>
+    </div>
+    <button id="closeStats" class="close" aria-label="Close">Close</button>
+  </div>
+</div>
+
 <script>
   // ------------------------------
   // Demo data (unchanged)
@@ -1443,11 +1446,12 @@
     const list = ALL_ITEMS.filter(i => i[2] === tier);
     list.forEach(([name, rarity]) => {
       const card = document.createElement('div');
-      card.className = `gallery-card ${rarity}${tier==='t1' ? ' clickable' : ''}`;
+      const isClickable = (tier === 't1' || tier === 't2');
+      card.className = `gallery-card ${rarity}${isClickable ? ' clickable' : ''}`;
       const src = IMAGES[name] || FALLBACK_IMG;
-      const hint = tier==='t1' ? '<div class="stats-hint">Click for stats</div>' : '';
+      const hint = isClickable ? '<div class="stats-hint">Click for stats</div>' : '';
       card.innerHTML = `<div class=\"name\">${name}</div><img src=\"${src}\" alt=\"${name}\">${hint}`;
-      if(tier==='t1'){
+      if(isClickable){
         card.setAttribute('tabindex','0');
         card.addEventListener('click', ()=> openStats(name, rarity, src));
         card.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' ') { e.preventDefault(); openStats(name, rarity, src); } });
