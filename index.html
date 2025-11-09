@@ -540,13 +540,13 @@
   .gallery-card:hover .stats-hint{ opacity:1 }
 
   /* Weapon Stats Overlay */
-  .stats-overlay{ position:fixed; inset:0; display:none; place-items:center; z-index:70; background: rgba(6,8,14,.55); backdrop-filter: blur(4px) }
+  .stats-overlay{ position:fixed; inset:0; display:none; place-items:center; z-index:70; background: rgba(6,8,14,.72); }
   .stats-overlay.open{ display:grid; animation: overlayFade .18s ease }
   @keyframes overlayFade{ from{ opacity:0 } to{ opacity:1 } }
   .stats-card{
     width:min(900px, 92vw);
     display:grid; grid-template-columns: 1.2fr 1fr; gap:16px;
-    background: rgba(14,16,25,.75);
+    background: rgba(10,12,18,.95);
     border:1px solid rgba(255,255,255,.10);
     border-radius:14px; padding:16px; box-shadow: var(--shadow);
     transform: translateY(8px); opacity:0; animation: slideIn .24s ease forwards;
@@ -555,11 +555,15 @@
   .stats-card .close{ justify-self:end; background:#1a1d2e; border:1px solid rgba(255,255,255,.18); color:#cbd5e1; border-radius:8px; padding:6px 10px; cursor:pointer }
   .stats-header{ grid-column: 1 / -1; display:flex; align-items:center; justify-content:space-between; margin-bottom:4px }
   .stats-title{ font-weight:900; font-size:20px; color:#ffe1a6; text-shadow: 0 0 6px rgba(255,176,58,.45) }
-  .stats-rarity{ font-size:12px; padding:4px 8px; border-radius:999px; border:1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.04); color:#cbd5e1 }
+  .stats-rarity{ font-size:12px; padding:4px 8px; border-radius:999px; border:1px solid rgba(255,255,255,.14); background: rgba(18,22,32,.88); color:#cbd5e1 }
   .stats-preview{ align-self:center; justify-self:center; }
-  .stats-preview img{ width:100%; height:auto; max-height:280px; object-fit:contain; filter: drop-shadow(0 12px 30px rgba(0,0,0,.45)) }
+  .stats-preview img{ width:100%; height:auto; max-height:280px; object-fit:contain; filter: drop-shadow(0 6px 16px rgba(0,0,0,.35)) }
+  /* Reduce background effects while modal is open to save GPU */
+  body.modal-open .page-bg{ filter:none; opacity:.16 }
+  body.modal-open .cut{ animation:none !important }
+  body.modal-open .watermark, body.modal-open .watermark .inner{ animation:none !important }
   .stats-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:10px }
-  .stat{ background: rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.10); border-radius:10px; padding:10px }
+  .stat{ background: rgba(18,22,32,.88); border:1px solid rgba(255,255,255,.10); border-radius:10px; padding:10px }
   .stat .label{ display:block; color:#94a3b8; font-size:12px; margin-bottom:4px }
   .stat .value{ font-weight:800; font-size:18px; letter-spacing:.02em }
   .value.green{ color:#78ffb0; text-shadow: 0 0 8px rgba(120,255,176,.25) }
@@ -902,7 +906,7 @@
       <div class="stats-title" id="statsTitle">Weapon</div>
       <div class="stats-rarity" id="statsRarity">Common</div>
     </div>
-    <div class="stats-preview"><img id="statsImage" alt=""></div>
+        <div class="stats-preview"><img id="statsImage" decoding="async" alt=""></div>
     <div class="stats-grid">
       <div class="stat">
         <span class="label">Damage</span>
@@ -1171,6 +1175,37 @@
 
   function getStats(name){ return STATS[name] || defaultStats(name); }
 
+  // ------------------------------
+  // Attachment info for stats panel
+  // ------------------------------
+  const ATTACH_INFO = {
+    'Flashlight': { type:'Utility', effect:'Illumination', compat:'Pistols', notes:'Togglable' },
+    'Auto Sear': { type:'Fire Control', effect:'Full‑auto conversion', compat:'Glock frame (select)', notes:'Greatly Increases Rate of Fire' },
+    'Switch': { type:'Fire Control', effect:'Full‑auto conversion', compat:'Glock frame (select)', notes:'Increases Rate of Fire' },
+    'Extended Magazine': { type:'Magazine', capacity:'33 rounds', compat:'Glock double‑stack 9mm', notes:'Adds Weight' },
+    'Tan Extended Magazine': { type:'Magazine', capacity:'33 rounds', compat:'Glock double‑stack 9mm', notes:'Cosmetic Variant' },
+    'Kriss Vector Magazine': { type:'Magazine', capacity:'25 rounds', compat:'Kriss platform / Glock pattern', notes:'9mm' },
+    'Tan Kriss Vector Magazine': { type:'Magazine', capacity:'25 rounds', compat:'Kriss platform / Glock pattern', notes:'Cosmetic Variant' },
+    'Drum Magazine': { type:'Magazine', capacity:'50 rounds', compat:'Glock/AR9 pattern', notes:'High Mass' },
+    'Tan Drum Magazine': { type:'Magazine', capacity:'50 rounds', compat:'Glock/AR9 pattern', notes:'Cosmetic Variant' },
+    'PMAG Extended Magazine': { type:'Magazine', capacity:'40 rounds', compat:'5.56 AR/M4 (STANAG)', notes:'Polymer' },
+    'PMAG Drum Magazine': { type:'Magazine', capacity:'60 rounds', compat:'5.56 AR/M4 (STANAG)', notes:'High Capacity' }
+  };
+
+  function isAttachmentName(name){
+    try{ return Array.isArray(ATTACHMENTS) && ATTACHMENTS.some(x => x && x[0] === name); }catch{ return false; }
+  }
+
+  function setStatField(valueId, labelText, valueText, valueClass){
+    const v = document.getElementById(valueId);
+    if(!v) return;
+    const labelEl = v.previousElementSibling; // .label before the value
+    if(labelEl) labelEl.textContent = labelText;
+    v.textContent = valueText;
+    v.classList.remove('gold','green','red');
+    if(valueClass) v.classList.add(valueClass);
+  }
+
 
   // Drugs dataset (edit and expand as needed). Each item: [name, rarity, imageKey]
   // Populate with your real list when ready.
@@ -1371,16 +1406,36 @@
   // ------------------------------
   function openStats(name, rarity, src){
     if(!document.getElementById('statsOverlay')) return;
-    const s = getStats(name);
     document.getElementById('statsTitle').textContent = name;
     document.getElementById('statsRarity').textContent = (rarity || 'common').toUpperCase();
     const img = document.getElementById('statsImage');
     img.src = src || (IMAGES[name] || FALLBACK_IMG);
     img.alt = name;
-    document.getElementById('statDamage').textContent = s.damage;
-    document.getElementById('statFire').textContent = s.fire + ' RPM';
-    document.getElementById('statAmmo').textContent = s.ammo;
-    document.getElementById('statMag').textContent = `Reg: ${s.magStd}  |  Ext: ${s.magExt}`;
+
+    const effectVal = document.getElementById('statFire');
+    const effectCard = effectVal ? effectVal.parentElement : null;
+
+    if(isAttachmentName(name)){
+      const a = ATTACH_INFO[name] || { type:'Attachment', effect:'-', compat:'-', notes:'-' };
+      setStatField('statDamage','Type', a.type);
+      // For magazines, hide Effect; otherwise show Effect text
+      if(effectCard){
+        const isMag = (a.type || '').toLowerCase().includes('magazine');
+        if(isMag){ effectCard.style.display = 'none'; }
+        else { effectCard.style.display = ''; setStatField('statFire','Effect', a.effect || '-'); }
+      }
+      setStatField('statAmmo','Compatibility', a.compat || '-');
+      if(a.capacity){ setStatField('statMag','Capacity', a.capacity); }
+      else { setStatField('statMag','Notes', a.notes || '-'); }
+    } else {
+      const s = getStats(name);
+      setStatField('statDamage','Damage', String(s.damage), 'gold');
+      setStatField('statFire','Fire Rate', `${s.fire} RPM`, 'green');
+      if(effectCard) effectCard.style.display = '';
+      setStatField('statAmmo','Ammo', s.ammo);
+      setStatField('statMag','Capacity (Reg/Ext)', `Reg: ${s.magStd} | Ext: ${s.magExt}`);
+    }
+
     const overlay = document.getElementById('statsOverlay');
     overlay.classList.add('open');
     overlay.removeAttribute('aria-hidden');
@@ -1390,6 +1445,8 @@
     if(!overlay) return;
     overlay.classList.remove('open');
     overlay.setAttribute('aria-hidden', 'true');
+    // restore animations/effects
+    document.body.classList.remove('modal-open');
   }
   (function setupStatsOverlay(){
     const overlay = document.getElementById('statsOverlay');
@@ -1487,11 +1544,16 @@
     }
     list.forEach(([name, rarity, key]) => {
       const card = document.createElement('div');
-      card.className = `gallery-card ${rarity || 'common'}`;
+      card.className = `gallery-card ${rarity || 'common'} clickable`;
       // Use a safe default image if not provided
       const defaultImg = IMAGES['Ghost Glock 17'] || 'images/WEAPON_GHOST.png';
       const src = IMAGES[name] || (key ? IMAGES[key] : null) || defaultImg;
-      card.innerHTML = `<div class=\"name\">${name}</div><img src=\"${src}\" alt=\"${name}\">`;
+      const hint = '<div class="stats-hint">Click for stats</div>';
+      card.innerHTML = `<div class=\"name\">${name}</div><img src=\"${src}\" alt=\"${name}\">${hint}`;
+      // Enable click/keyboard like Tier 1/2
+      card.setAttribute('tabindex','0');
+      card.addEventListener('click', ()=> openStats(name, rarity || 'common', src));
+      card.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' ') { e.preventDefault(); openStats(name, rarity || 'common', src); } });
       attachGridStage.appendChild(card);
     });
   }
