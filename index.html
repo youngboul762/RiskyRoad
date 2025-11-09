@@ -1367,19 +1367,8 @@
   }
 
   // Play a single tick; uses sample when available, otherwise the synthesized beep
-  async function playTick({ volume = 0.75, rate = 1.0 } = {}) {
-    await ensureAudio();
-    if (tickBuffer) {
-      const src = audioCtx.createBufferSource();
-      src.buffer = tickBuffer;
-      src.playbackRate.value = rate;
-      const gain = audioCtx.createGain();
-      gain.gain.value = volume;
-      src.connect(gain).connect(audioCtx.destination);
-      src.start();
-    } else {
-      beepTick({ volume });
-    }
+  async function playTick() {
+    // silent spin: no sound effects
   }
 
   // Snap a specific tile name under the cut line — synchronously (no easing)
