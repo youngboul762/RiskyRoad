@@ -1133,7 +1133,7 @@
     "Glock 43X": { ammo: "9x19mm", damage: 26, fire: 600, magStd: 10, magExt: 20 },
     "FN 5.7": { ammo: "5.7x28mm", damage: 25, fire: 700, magStd: 20, magExt: 30 },
     "Ruger 5.7": { ammo: "5.7x28mm", damage: 25, fire: 700, magStd: 20, magExt: 30 },
-    ".357 Magnum": { ammo: ".357 Magnum", damage: 45, fire: 300, magStd: 6, magExt: 8 },
+    ".357 Magnum": { ammo: ".357 Magnum", damage: 39, fire: 300, magStd: 6, magExt: 8 },
     ".38 Special": { ammo: ".38 Special", damage: 32, fire: 320, magStd: 6, magExt: 8 },
     "PSA AR9": { ammo: "9x19mm", damage: 26, fire: 800, magStd: 30, magExt: 50 },
     "Draco 9s": { ammo: "9x19mm", damage: 28, fire: 750, magStd: 30, magExt: 50 },
@@ -1142,12 +1142,12 @@
     "M16A1": { ammo: "5.56x45mm", damage: 35, fire: 750, magStd: 20, magExt: 30 },
     ".300 Blackout": { ammo: "300 BLK", damage: 55, fire: 700, magStd: 30, magExt: 60 },
     "Ghost Glock 17": { ammo: "9x19mm", damage: 28, fire: 600, magStd: 17, magExt: 33 },
-    "Canik TP9": { ammo: "9x19mm", damage: 28, fire: 600, magStd: 18, magExt: 32 },
+    "Canik TP9": { ammo: "9x19mm", damage: 30, fire: 600, magStd: 18, magExt: 32 },
     "Polymer 80": { ammo: "9x19mm", damage: 28, fire: 600, magStd: 17, magExt: 33 },
-    "Taurus TX22": { ammo: ".22 LR", damage: 15, fire: 650, magStd: 16, magExt: 25 },
-    "XD-M": { ammo: "9x19mm", damage: 28, fire: 600, magStd: 19, magExt: 32 },
-    "Beretta M9": { ammo: "9x19mm", damage: 27, fire: 580, magStd: 15, magExt: 30 },
-    "Worn G19X": { ammo: "9x19mm", damage: 26, fire: 580, magStd: 17, magExt: 33 },
+    "Taurus TX22": { ammo: ".22 LR", damage: 17, fire: 650, magStd: 16, magExt: 25 },
+    "XD-M": { ammo: "9x19mm", damage: 25, fire: 600, magStd: 19, magExt: 32 },
+    "Beretta M9": { ammo: "9x19mm", damage: 31, fire: 580, magStd: 15, magExt: 30 },
+    "Worn G19X": { ammo: "9x19mm", damage: 25, fire: 580, magStd: 17, magExt: 33 },
     "Taurus G2C": { ammo: "9x19mm", damage: 26, fire: 600, magStd: 12, magExt: 17 },
     "H&K USP": { ammo: ".45 ACP", damage: 32, fire: 520, magStd: 12, magExt: 20 },
     "S&W SD40": { ammo: ".40 S&W", damage: 30, fire: 580, magStd: 14, magExt: 22 },
@@ -1493,7 +1493,9 @@
       setStatField('statMag','Notes', d.notes || '-');
       if(typeof setBadges === 'function'){ setBadges(d.badges || []); }
     } else {
-      (function(){ const w = document.getElementById("statBadges"); if(w){ w.dataset.item = name; } })();
+      // Weapon: no badges
+      if(typeof setBadges === 'function'){ setBadges([]); }
+      (function(){ const w = document.getElementById("statBadges"); if(w){ w.dataset.item = ""; } })();
       const s = getStats(name);
       setStatField('statDamage','Damage', String(s.damage), 'gold');
       setStatField('statFire','Fire Rate', `${s.fire} RPM`, 'green');
@@ -2171,9 +2173,3 @@
   <div class="watermark"><span class="inner"><a href="https://discord.gg/strictlyzel" target="_blank" rel="noopener noreferrer">Manufactured by Zel</a></span></div>
 </body>
 </html>
-
-
-
-
-
-
