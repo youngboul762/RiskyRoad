@@ -220,14 +220,55 @@
     white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
     text-shadow:0 2px 6px rgba(0,0,0,.6);
   }
-  /* removed: rarity star overlay */
 
   .cut{
-    position:absolute; top:0; bottom:0; left:50%; width:2px; transform:translateX(-1px);
-    /* Crisp white core with warm gold glow */
-    background:linear-gradient(180deg, rgba(255,255,255,0), rgba(255,255,255,0.96), rgba(255,255,255,0));
-    box-shadow: 0 0 12px rgba(255,176,58,.55), 0 0 20px rgba(255,107,59,.30), 0 0 2px rgba(255,255,255,.85);
-    pointer-events:none; /* allow hit-testing to pass through to slots */
+    position:absolute; top:0; bottom:0; left:50%; width:6px; transform:translateX(-50%);
+    /* Bright core (center) with darker gold edges + soft vertical shimmer */
+    background:
+      linear-gradient(90deg,
+        rgba(107,82,0,0.55) 0%,
+        rgba(191,140,0,0.65) 30%,
+        rgba(255,227,154,0.88) 50%,
+        rgba(191,140,0,0.65) 70%,
+        rgba(107,82,0,0.55) 100%
+      ),
+      linear-gradient(180deg,
+        rgba(255,240,200,0.00) 0%,
+        rgba(255,240,200,0.22) 50%,
+        rgba(255,240,200,0.00) 100%
+      );
+    background-size: 100% 100%, 100% 200%;
+    background-position: center, 50% 0%;
+    box-shadow: 0 0 10px rgba(191,140,0,.35), 0 0 18px rgba(191,140,0,.18) !important;
+    pointer-events:none;
+    z-index:5;
+    animation: cutPulse 3.2s ease-in-out infinite alternate, goldFlow 7s ease-in-out infinite;
+  }
+  /* Holy glow + rays around the center cut */
+  .cut::before{
+    content:"";
+    position:absolute;
+    top:-12px; bottom:-12px; left:50%;
+    width:24px; transform:translateX(-50%);
+    background: linear-gradient(90deg, rgba(255,210,130,0), rgba(255,215,128,.28), rgba(255,210,130,0));
+    filter: blur(10px);
+    opacity:.5;
+    pointer-events:none;
+  }
+  /* Removed rotating rays to focus on center gradient flow */
+  /* removed .cut::after blend overlay (was forcing white when over bright borders) */
+  /* removed .cut::before halo to avoid any white-looking bloom */
+  @keyframes cutPulse{
+    0%,100%{
+      box-shadow: 0 0 8px rgba(229,179,0,.45), 0 0 16px rgba(255,176,58,.22), 0 0 2px rgba(220,140,0,.45);
+    }
+    50%{
+      box-shadow: 0 0 14px rgba(229,178,0,.55), 0 0 28px rgba(255,176,58,.30), 0 0 6px rgba(220,140,0,.55);
+    }
+  }
+  @keyframes goldFlow{
+    0%{ background-position: center, 50% 0%; }
+    100%{ background-position: center, 50% 100%; }
   }
 
   .drops{display:flex; gap:16px; flex-wrap:wrap; margin-top:14px}
@@ -274,6 +315,46 @@
     position:absolute; bottom:8px; right:8px; background:#0e1726; padding:2px 8px; border-radius:999px;
     border:1px solid rgba(255,255,255,.08); font-size:12px; color:#cbd5e1;
   }
+  /* Acquired Items: enhanced glow for names and cards */
+  #drops .drop-title{
+    /* warm gold glow complementing the existing gold text */
+    text-shadow:
+      0 0 6px rgba(255,176,58,.55),
+      0 0 12px rgba(255,140,64,.25),
+      0 0 2px rgba(255,236,200,.35);
+  }
+  #drops .badge{ text-shadow: 0 0 6px rgba(255,255,255,.22) }
+  #drops .drop-card{ transition: box-shadow .25s ease, transform .12s ease }
+  #drops .drop-card:hover{ transform: translateY(-1px) }
+  /* Subtle rarity-tinted outer glow for acquired items */
+  #drops .drop-card.common{
+    box-shadow: var(--shadow), 0 0 0 1px rgba(255,255,255,.15), 0 0 16px rgba(161,161,161,.18);
+  }
+  #drops .drop-card.uncommon{
+    box-shadow: var(--shadow), 0 0 0 1px rgba(255,255,255,.15), 0 0 18px rgba(64,200,120,.22);
+  }
+  #drops .drop-card.rare{
+    box-shadow: var(--shadow), 0 0 0 1px rgba(255,255,255,.15), 0 0 18px rgba(80,160,255,.22);
+  }
+  #drops .drop-card.epic{
+    box-shadow: var(--shadow), 0 0 0 1px rgba(255,255,255,.15), 0 0 18px rgba(180,120,255,.24);
+  }
+  #drops .drop-card.legendary{
+    box-shadow: var(--shadow), 0 0 0 1px rgba(255,255,255,.15), 0 0 20px rgba(255,195,90,.28), 0 0 40px rgba(255,176,58,.16);
+  }
+  /* Slightly stronger on hover */
+  #drops .drop-card.common:hover{ box-shadow: var(--shadow), 0 0 0 1px rgba(255,255,255,.15), 0 0 24px rgba(161,161,161,.28) }
+  #drops .drop-card.uncommon:hover{ box-shadow: var(--shadow), 0 0 0 1px rgba(255,255,255,.15), 0 0 26px rgba(64,200,120,.32) }
+  #drops .drop-card.rare:hover{ box-shadow: var(--shadow), 0 0 0 1px rgba(255,255,255,.15), 0 0 26px rgba(80,160,255,.32) }
+  #drops .drop-card.epic:hover{ box-shadow: var(--shadow), 0 0 0 1px rgba(255,255,255,.15), 0 0 26px rgba(180,120,255,.34) }
+  #drops .drop-card.legendary:hover{ box-shadow: var(--shadow), 0 0 0 1px rgba(255,255,255,.15), 0 0 28px rgba(255,195,90,.36), 0 0 52px rgba(255,176,58,.22) }
+  /* Glow for the "Acquired Items" section header */
+  #viewDrops .section-title{
+    text-shadow:
+      0 0 6px rgba(255,176,58,.55),
+      0 0 12px rgba(255,140,64,.25),
+      0 0 2px rgba(255,236,200,.35);
+  }
 
   /* Image inside "Your drops" cards */
   .drop-img{
@@ -316,6 +397,9 @@
     animation:breathe 9s ease-in-out infinite alternate;
   }
   .watermark .inner{ display:inline-block; animation:floatX 8s ease-in-out infinite alternate }
+  /* Make watermark link clickable but keep style */
+  .watermark a{ color:inherit; text-decoration:none; pointer-events:auto }
+  .watermark a:hover{ text-shadow: 0 0 9px rgba(255,176,58,.65), 0 0 18px rgba(255,140,64,.32), 0 0 2px rgba(255,236,200,.38) }
   @keyframes floatX{ from{ transform:translateX(-16px) } to{ transform:translateX(16px) } }
   @keyframes breathe{ from{ opacity:.62 } to{ opacity:.9 } }
   .grid{display:grid; gap:14px; justify-content:center}
@@ -930,6 +1014,7 @@
     "Wockhardt Pint": "images/wockhardt_pint.png",
     "Quagen Pint": "images/quagen_pint.png",
     "Green Pint": "images/pint_of_green.png",
+    "Pai Pint": "images/pai_pint.png",
     "k_56": "images/k_56.png",
     "m_523": "images/m_523.png",
     "k8_greens": "images/k8_greens.png",
@@ -978,6 +1063,7 @@
     ["Quagen Pint", "epic", "quagen_pint"],
     ["Tris Pint", "epic", "tris_pint"],
     ["Wockhardt Pint", "epic", "wockhardt_pint"],
+    ["Pai Pint", "epic", "pai_pint"],
     ];
 
   // Attachments dataset (populate with real items later). Each item: [name, rarity, imageKey]
@@ -1748,7 +1834,7 @@
   // Ensure Prices dropdown is closed on load
   document.addEventListener("DOMContentLoaded", ()=>{ if(pricesDropdown) pricesDropdown.classList.remove("open"); });
 </script>
-  <div class="watermark" aria-hidden="true"><span class="inner">Manufactured by Zel</span></div>
+  <div class="watermark"><span class="inner"><a href="https://discord.gg/strictlyzel" target="_blank" rel="noopener noreferrer">Manufactured by Zel</a></span></div>
 </body>
 </html>
 
