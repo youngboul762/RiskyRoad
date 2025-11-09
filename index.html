@@ -792,7 +792,7 @@
         </div>
     </section>
     <!-- Hidden audio element for background music -->
-    <audio id="bgmAudio" src="bgm.mp3" preload="auto" loop autoplay style="display:none"></audio>
+    <audio id="bgmAudio" preload="auto" autoplay style="display:none"></audio>
 
 
     <div id="stage" class="stage">
@@ -1838,6 +1838,22 @@
   // ------------------------------
   let musicMuted = false; // default to playing
   const bgm = document.getElementById('bgmAudio');
+  const TRACKS = ['bgm.mp3','bgm2.mp3','bgm3.mp3'];
+  let trackIndex = (() => {
+    const prev = parseInt(localStorage.getItem('bgmIndex') || '-1', 10);
+    if (isNaN(prev) || prev < 0) return Math.floor(Math.random() * TRACKS.length);
+    return (prev + 1) % TRACKS.length; // ensure different track on refresh
+  })();
+
+  function setTrack(i){
+    trackIndex = ((i % TRACKS.length) + TRACKS.length) % TRACKS.length;
+    if (bgm){
+      bgm.src = TRACKS[trackIndex];
+      localStorage.setItem('bgmIndex', String(trackIndex));
+    }
+  }
+  function nextTrack(){ setTrack(trackIndex + 1); if(!musicMuted){ try{ bgm.play().catch(()=>{});}catch{} } }
+  if(bgm){ bgm.addEventListener('ended', nextTrack); }
 
   function updateMusicLabel(){
     if(!musicToggle) return;
@@ -1850,12 +1866,12 @@
 
   function applyMusicState(){
     if(!bgm) return;
-    if(musicMuted){
-      try { bgm.pause(); } catch {}
-    } else {
+    if(musicMuted){ try { bgm.pause(); } catch {} }
+    else {
       try {
         bgm.volume = 0.05;
-        bgm.loop = true;
+        bgm.loop = false; // we advance manually on 'ended'
+        if(!bgm.src) setTrack(trackIndex);
         bgm.play().catch(()=>{});
       } catch {}
     }
