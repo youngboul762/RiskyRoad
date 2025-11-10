@@ -1,79 +1,122 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Killadelphia Faction Showcase</title>
-  <link rel="stylesheet" href="css/style.css" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>The Chi : Cinematic Roleplay</title>
+<style>
+  :root{
+    --bg:#0b0b12;
+    --panel:#121421;
+    --accent:#ff6b3b;
+    --accent-2:#ffb03a;
+    --text:#e8e8f2;
+    --muted:#94a3b8;
+    --card-common:#2b2f44;
+    --shadow:0 10px 30px rgba(0,0,0,.45);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%; overflow-x:hidden}
+  body{
+    margin:0;background:radial-gradient(1200px 600px at 10% -10%, rgba(255,140,64,.16), transparent 60%),
+    radial-gradient(1200px 600px at 110% 10%, rgba(255,92,48,.12), transparent 60%), var(--bg);
+    color:var(--text); font:500 16px/1.4 "Rajdhani", system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
+    letter-spacing:.2px; display:flex; align-items:flex-start; justify-content:center; padding:0px 16px 96px;
+  }
+  .page-bg{ position:fixed; inset:0; z-index:0; pointer-events:none;
+    background:url('https://i.imgur.com/z17MUhQ.png') center/cover no-repeat fixed;
+    filter: blur(14px) saturate(1.05);
+    opacity:.22;
+    transform: scale(1.06);
+  }
+  .wrap{max-width:1280px; width:100%; margin:0 auto}
+  /* ... keep only hero, nav, and layout styles ... */
+  .topbar {
+    position: sticky; top: 0; z-index: 100;
+    background: linear-gradient(180deg, rgba(10,10,16,0.95), rgba(10,10,16,0.7));
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    backdrop-filter: blur(8px) saturate(1.2); 
+  }
+  .top-inner { max-width: 1280px; margin: 0 auto; padding: 14px 22px; display: flex; align-items: center; justify-content: space-between;}
+  .brand { font-size: clamp(20px, 3vw, 28px); font-weight: 800; color: #fff; letter-spacing: 0.02em; margin: 0; }
+  .brand .accent { color: var(--accent-2); text-shadow: 0 0 10px rgba(255,176,58,0.40);}
+  .nav { display: flex; align-items: center; gap: 18px; }
+  .nav-link { color: #d8dee9; font-size: 14px; text-decoration: none; transition: color 0.2s ease, text-shadow 0.2s ease; }
+  .nav-link:hover { color: var(--accent-2); text-shadow: 0 0 8px rgba(255,176,58,0.40);}
+  /* ... snip rest for brevity ... */
+  /* Hero styles */
+  .hero { width: 100vw; margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw); margin-top: 0; margin-bottom: 18px;
+    background: linear-gradient(
+      90deg,
+      rgba(10, 10, 16, 0.95) 0%,
+      rgba(20, 16, 12, 0.95) 50%,
+      rgba(14, 10, 8, 0.92) 100%
+    ),
+    radial-gradient(900px 420px at 8% -10%, rgba(255, 140, 64, 0.16), transparent 60%),
+    radial-gradient(900px 420px at 110% 10%, rgba(255, 92, 48, 0.12), transparent 60%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06); box-shadow: 0 2px 18px rgba(0, 0, 0, 0.4);}
+  .hero-inner { width: 100%; max-width: 1280px; margin: 0 auto; padding: 36px 32px 24px; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; position: relative; }
+  .hero-title { margin: 0 0 6px 0; font-weight: 900; letter-spacing: 0.02em; font-size: clamp(28px, 4.2vw, 40px); color: var(--accent-2); text-shadow: 0 0 14px rgba(255, 176, 58, 0.35);}
+  .hero-logo { position: absolute; top: 12px; right: 36px; height: clamp(64px, 12vw, 120px); width: auto; display: block; filter: drop-shadow(0 2px 10px rgba(0,0,0,.45)); opacity: 0.98; pointer-events: none; z-index: 1;}
+  .hero-accent { color: var(--accent-2); text-shadow: 0 0 14px rgba(255,176,58,0.35);}
+  .hero-sub { margin: 0; color: #a6b3c6; font-size: clamp(14px, 1.4vw, 16px);}
+  /* Tabs/Sections */
+  .nav-section { display: none;}
+  .nav-section.active { display: block;}
+  /* Basic card, grid, etc. */
+  .section-card { background: var(--panel); border-radius:14px; box-shadow:var(--shadow); padding: 30px 18px; margin-top: 40px;}
+  .section-title { font-weight:700; font-size: 24px; color: var(--accent-2); letter-spacing:.04em; margin-bottom: 12px;}
+  .watermark{position:fixed; left:50%; bottom:17px; transform:translateX(-50%); z-index:50; pointer-events:none; user-select:none; font-size:clamp(14px, 2vw, 18px); letter-spacing:.03em; font-weight:800;
+    color:rgba(255,176,58,.70); text-shadow:0 0 7px rgba(255,176,58,.45),0 0 14px rgba(255,107,59,.28),0 0 1px rgba(255,236,200,.30);}
+  .watermark .inner{ display:inline-block; }
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
-
-  <!-- Splash Screen -->
-  <div id="splash" class="splash">
-    <h1 class="glow-text">KILLADELPHIA</h1>
-    <p class="fade-text">Click to Enter the Faction Network</p>
-    <button id="enterBtn">Enter Site</button>
-  </div>
-
-  <!-- App Container -->
-  <div id="app" class="app hidden">
-    <aside class="sidebar">
-      <div class="brand">
-        <div class="logo">K</div>
-        <h2>Killadelphia</h2>
-        <p class="subtext">Contraband System</p>
-      </div>
-      <nav>
-        <button class="nav-btn active" data-page="faction">Faction</button>
-        <button class="nav-btn" data-page="members">Members</button>
-        <button class="nav-btn" data-page="gallery">Gallery</button>
+<div class="wrap">
+  <div class="page-bg" aria-hidden="true"></div>
+  <section class="hero">
+    <div class="hero-inner">
+      <img class="hero-logo" src="https://i.ibb.co/C3gpNWgG/RISKY-BANDS-x-LIL-QUISSY-HOT-CARS-OFFICIAL-VIDEO-EA-4-K-FILMS.gif" alt="Risky Road server logo">
+      <h1 class="hero-title">
+        <span class="hero-accent">Risky Road</span> Faction Showcase
+      </h1>
+      <p class="hero-sub">Foreva Hawk Nem.</p>
+      <!-- Main tab navigation -->
+      <nav class="nav">
+        <a class="nav-link" data-tab="riskyroad" href="#"><i class="fa-solid fa-road"></i>Risky Road</a>
+        <a class="nav-link" data-tab="faction" href="#"><i class="fa-solid fa-users"></i>Faction Showcase</a>
       </nav>
-    </aside>
-
-    <main class="main">
-      <header class="top-bar">
-        <h3 id="pageTitle">Faction Overview</h3>
-        <div class="controls">
-          <button id="playPause" class="ctrl">Pause</button>
-          <button id="muteBtn" class="ctrl">Mute</button>
-        </div>
-      </header>
-
-      <section id="faction" class="page active fade-in">
-        <div class="hero-banner">
-          <img src="assets/img/faction-banner.jpg" alt="Faction Banner" />
-          <div class="overlay">
-            <h1>The Iron Ravens</h1>
-            <p>Shadows rule the underground. We are the talons in the dark.</p>
-          </div>
-        </div>
-        <div class="content-card">
-          <h2>About the Faction</h2>
-          <p>Killadelphia’s most covert faction — operating under the Iron Ravens. Every mission, every strike, leaves a signature mark. We rise in silence and fall with honor.</p>
-          <ul>
-            <li>🜂 Operations: Urban infiltration & intelligence</li>
-            <li>🜄 Specialty: Shadow logistics</li>
-            <li>🜁 Status: Active</li>
-          </ul>
-        </div>
-      </section>
-
-      <section id="members" class="page fade-in">
-        <h2>Faction Members</h2>
-        <div id="memberGrid" class="member-grid"></div>
-      </section>
-
-      <section id="gallery" class="page fade-in">
-        <h2>Faction Gallery</h2>
-        <div id="galleryGrid" class="gallery-grid"></div>
-      </section>
-    </main>
+    </div>
+  </section>
+  <div id="riskyroad" class="nav-section active">
+    <div class="section-card">
+      <div class="section-title">Risky Road</div>
+      <p>This section details information about Risky Road. (Customize this content as needed.)</p>
+      <!-- You can put specific info/content here -->
+    </div>
   </div>
-
-  <audio id="bg-audio" loop preload="auto">
-    <source src="assets/music/theme.mp3" type="audio/mpeg">
-  </audio>
-
-  <script src="js/main.js"></script>
+  <div id="faction" class="nav-section">
+    <div class="section-card">
+      <div class="section-title">Faction Showcase</div>
+      <p>This section highlights the Faction Showcase for exclusive items or info. (Customize this content as needed.)</p>
+      <!-- You can put specific info/content here -->
+    </div>
+  </div>
+  <div class="watermark"><span class="inner">Risky Road</span></div>
+</div>
+<script>
+  // Simple tab handler for two sections
+  document.querySelectorAll('.nav-link').forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+      document.querySelectorAll('.nav-section').forEach(sec => sec.classList.remove('active'));
+      link.classList.add('active');
+      const tab = link.getAttribute('data-tab');
+      document.getElementById(tab).classList.add('active');
+    });
+  });
+</script>
 </body>
 </html>
