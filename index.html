@@ -937,6 +937,7 @@
         <span class="label">Price</span>
         <span class="value" id="statPrice">-</span>
       </div>
+      
     </div>
     <button id="closeStats" class="close" aria-label="Close">Close</button>
   </div>
@@ -1265,25 +1266,25 @@
     'V 230': null,
     'K56': null,
     'M 523': null,
-    'Line of Green': null,
+    'Line of Green': '$10-$30',
     'K8': null,
     'V 48': null,
     'MBox 15': null,
-    'Green Pint': null,
+    'Green Pint': '$100-$400',
     'RP 20': null,
     'MBox 20': null,
-    'Line of Wockhardt': null,
-    'Line of Pai': null,
-    'Line of Quagen': null,
-    'Line of Tris': null,
+    'Line of Wockhardt': '$275-$400',
+    'Line of Pai': '$125-$135',
+    'Line of Quagen': '$140-$150',
+    'Line of Tris': '$160-$175',
     'MBox 30': null,
     'RP 30': null,
     'K9': null,
     'Superman Pill': null,
-    'Quagen Pint': null,
-    'Tris Pint': null,
-    'Wockhardt Pint': null,
-    'Pai Pint': null,
+    'Quagen Pint': '$1,200-$1,600',
+    'Tris Pint': '$1,750-$2,400',
+    'Wockhardt Pint': '$2,800-$3,600',
+    'Pai Pint': '$800-$1,200',
   };
 
   // Default price ranges by rarity
@@ -1297,8 +1298,18 @@
   function formatCurrency(n){
     try{ return '$' + Number(n).toLocaleString(); }catch{ return '$' + n; }
   }
+  // Build a normalized lookup for robust name matching
+  const DRUG_PRICES_NORM = (function(obj){
+    try{
+      return Object.fromEntries(Object.entries(obj || {}).map(function(kv){
+        return [String(kv[0]||'').toLowerCase().trim(), kv[1]];
+      }));
+    }catch{ return {}; }
+  })(DRUG_PRICES);
+
   function getDrugPrice(name, rarity){
-    const p = DRUG_PRICES && DRUG_PRICES[name];
+    const raw = (name || '').toLowerCase().trim();
+    const p = (DRUG_PRICES && DRUG_PRICES[name] !== undefined) ? DRUG_PRICES[name] : DRUG_PRICES_NORM[raw];
     if(p !== undefined && p !== null){
       if(typeof p === 'number') return formatCurrency(p);
       return String(p);
