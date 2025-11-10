@@ -69,6 +69,11 @@
   .watermark{position:fixed; left:50%; bottom:17px; transform:translateX(-50%); z-index:50; pointer-events:none; user-select:none; font-size:clamp(14px, 2vw, 18px); letter-spacing:.03em; font-weight:800;
     color:rgba(255,176,58,.70); text-shadow:0 0 7px rgba(255,176,58,.45),0 0 14px rgba(255,107,59,.28),0 0 1px rgba(255,236,200,.30);}
   .watermark .inner{ display:inline-block; }
+  .rr-list { margin:0 0 24px 0; padding:0; list-style: none; }
+  .rr-list-item { margin-bottom: 12px;}
+  .rr-list-title { font-weight: 700; color: var(--accent-2);}
+  .rr-blocks { margin-bottom: 10px;}
+  .rr-block-main {font-weight:700;}
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
@@ -84,7 +89,7 @@
       <p class="hero-sub">Foreva Hawk Nem.</p>
       <!-- Main tab navigation -->
       <nav class="nav">
-        <a class="nav-link" data-tab="riskyroad" href="#"><i class="fa-solid fa-road"></i>Set Profile</a>
+        <a class="nav-link" data-tab="riskyroad" href="#"><i class="fa-solid fa-road"></i>Risky Road</a>
         <a class="nav-link" data-tab="faction" href="#"><i class="fa-solid fa-users"></i>Faction Showcase</a>
       </nav>
     </div>
@@ -92,25 +97,36 @@
   <div id="riskyroad" class="nav-section active">
     <div class="section-card">
       <div class="section-title">Risky Road</div>
-      <p>Set: Risky Road (104th & Maryland)
-
-
-Main Block: 104th & Maryland
-Notable Blocks: 105th & Indiana → 107th & Edbrooke
-
-Gang Composition: Predominantly composed of younger members tied to the Four Corner Hustlers (4CH) structure, guided by older OGs who’ve maintained presence in Roseland since the early 2010s. The younger generation keeps the block active through both street and social activity, while the older heads provide structure, discipline, and leadership to keep the Road organized and respected.
-
-Area Formerly Controlled By: Smaller 4CH-affiliated crews and independent neighborhood figures before Risky Road unified the area under the same name.
-
-Neighborhood: Roseland, South Side, Chicago, Illinois
-
-Deceased Members: Several fallen members have left their mark on the neighborhood, honored through murals, candles, and social media tributes. Their memory serves as motivation for the younger generation to keep the Road’s name alive.
-
-Rappers: A handful of active members have stepped into Chicago’s local drill and trap music scene, releasing songs inspired by the Road’s daily life, struggles, and neighborhood pride. Their music has built local buzz, with tracks circulating through platforms like YouTube and SoundCloud, further solidifying the set’s identity and presence online.
-
-Allies: Primarily aligned with other Four Corner Hustler sets across the South and West Sides. Some neutral or respectful ties with select
-BD and unaffiliated neighborhood crews.
-Years Active: Early 2010s – Present</p>
+      <ul class="rr-list">
+        <li class="rr-list-item"><span class="rr-list-title">Set:</span> Risky Road (104th &amp; Maryland)</li>
+        <li class="rr-list-item rr-blocks">
+          <span class="rr-list-title">Main Block:</span> <span class="rr-block-main">104th &amp; Maryland</span>
+        </li>
+        <li class="rr-list-item rr-blocks">
+          <span class="rr-list-title">Notable Blocks:</span> 105th &amp; Indiana &rarr; 107th &amp; Edbrooke
+        </li>
+        <li class="rr-list-item">
+          <span class="rr-list-title">Gang Composition:</span> Predominantly composed of younger members tied to the Four Corner Hustlers (4CH) structure, guided by older OGs who’ve maintained presence in Roseland since the early 2010s. The younger generation keeps the block active through both street and social activity, while the older heads provide structure, discipline, and leadership to keep the Road organized and respected.
+        </li>
+        <li class="rr-list-item">
+          <span class="rr-list-title">Area Formerly Controlled By:</span> Smaller 4CH-affiliated crews and independent neighborhood figures before Risky Road unified the area under the same name.
+        </li>
+        <li class="rr-list-item">
+          <span class="rr-list-title">Neighborhood:</span> Roseland, South Side, Chicago, Illinois
+        </li>
+        <li class="rr-list-item">
+          <span class="rr-list-title">Deceased Members:</span> Several fallen members have left their mark on the neighborhood, honored through murals, candles, and social media tributes. Their memory serves as motivation for the younger generation to keep the Road’s name alive.
+        </li>
+        <li class="rr-list-item">
+          <span class="rr-list-title">Rappers:</span> A handful of active members have stepped into Chicago’s local drill and trap music scene, releasing songs inspired by the Road’s daily life, struggles, and neighborhood pride. Their music has built local buzz, with tracks circulating through platforms like YouTube and SoundCloud, further solidifying the set’s identity and presence online.
+        </li>
+        <li class="rr-list-item">
+          <span class="rr-list-title">Allies:</span> Primarily aligned with other Four Corner Hustler sets across the South and West Sides. Some neutral or respectful ties with select BD and unaffiliated neighborhood crews.
+        </li>
+        <li class="rr-list-item">
+          <span class="rr-list-title">Years Active:</span> Early 2010s – Present
+        </li>
+      </ul>
       <!-- You can put specific info/content here -->
     </div>
   </div>
@@ -138,4 +154,3 @@ Years Active: Early 2010s – Present</p>
 </script>
 </body>
 </html>
-
