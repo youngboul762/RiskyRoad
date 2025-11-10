@@ -565,6 +565,17 @@
   .badge-pill.hp{ background:rgba(64,200,120,.14); border-color:rgba(64,200,120,.35); color:#baffd2 }
   .badge-pill.armor{ background:rgba(80,160,255,.14); border-color:rgba(80,160,255,.35); color:#d5e9ff }
   .badge-pill.stamina{ background:rgba(255,215,120,.14); border-color:rgba(255,215,120,.35); color:#fff4c6 }
+  /* Site-wide last-updated indicator */
+  .site-updated{
+    position:fixed; right:16px; bottom:12px; z-index:120;
+    background: rgba(12,14,22,.75);
+    backdrop-filter: blur(6px) saturate(1.02);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:10px; padding:6px 10px;
+    color:#cbd5e1; font-size:12px; letter-spacing:.02em;
+    box-shadow: 0 6px 20px rgba(0,0,0,.4);
+    pointer-events:none;
+  }
   .stats-preview img{ width:100%; height:auto; max-height:280px; object-fit:contain; filter: drop-shadow(0 6px 16px rgba(0,0,0,.35)) }
   /* Reduce background effects while modal is open to save GPU */
   body.modal-open .page-bg{ filter:none; opacity:.16 }
@@ -804,7 +815,9 @@
         </div>
     </section>
     <!-- Hidden audio element for background music -->
-    <audio id="bgmAudio" preload="auto" autoplay style="display:none"></audio>
+  <audio id="bgmAudio" preload="auto" autoplay style="display:none"></audio>
+  <!-- Site-wide last updated indicator -->
+  <div id="siteUpdated" class="site-updated" role="status" aria-live="polite">Last updated: …</div>
 
 
     <div id="stage" class="stage">
@@ -1425,6 +1438,8 @@
     drugs: "https://killadelphia-forums.com/threads/killadelphia-drug-prices.6/",
     weapons: "https://killadelphia-forums.com/threads/killadelphia-weapon-prices.7/"
   };
+  // Set this to override the automatic timestamp (optional)
+  const SITE_LAST_UPDATED = '';
   const navPrices = document.getElementById("navPrices");
   const pricesDropdown = document.getElementById("pricesDropdown");
   const pricesMenu = document.getElementById("pricesMenu");
@@ -1432,6 +1447,20 @@
   const priceWeapons = document.getElementById("priceWeapons");
   if(priceDrugs) priceDrugs.href = PRICE_LINKS.drugs;
   if(priceWeapons) priceWeapons.href = PRICE_LINKS.weapons;
+  // Initialize site-wide last updated indicator
+  (function initSiteUpdated(){
+    try{
+      const el = document.getElementById('siteUpdated');
+      if(!el) return;
+      const stamp = SITE_LAST_UPDATED && SITE_LAST_UPDATED.trim()
+        ? SITE_LAST_UPDATED.trim()
+        : (function(){
+            const d = new Date(document.lastModified);
+            return isNaN(d.getTime()) ? '' : d.toLocaleString();
+          })();
+      el.textContent = 'Last updated: ' + (stamp || 'N/A');
+    }catch{}
+  })();
   const stage = document.getElementById('stage');
   const viewDrops = document.getElementById('viewDrops');
   const viewT1 = document.getElementById('viewT1');
