@@ -1,10 +1,10 @@
-// Profile Editing & Logo Preview
-const editToggle = document.getElementById('edit-toggle');
-const editor = document.getElementById('editor');
-const logoInput = document.getElementById('logo-input');
-const logoPreview = document.getElementById('logo-preview');
+// Profile & Logo
+const editToggle=document.getElementById('edit-toggle');
+const editor=document.getElementById('editor');
+const logoInput=document.getElementById('logo-url-input');
+const logoPreview=document.getElementById('logo-preview');
 
-const inputs = {
+const inputs={
   set: document.getElementById('input-set'),
   main: document.getElementById('input-main'),
   aliases: document.getElementById('input-aliases'),
@@ -21,7 +21,7 @@ const inputs = {
   members: document.getElementById('input-members')
 };
 
-const fields = {
+const fields={
   set: document.getElementById('profile-set'),
   main: document.getElementById('profile-main'),
   aliases: document.getElementById('profile-aliases'),
@@ -38,36 +38,36 @@ const fields = {
   membersGrid: document.getElementById('members-grid')
 };
 
+// Editor toggle
+editToggle.addEventListener('click',()=>editor.classList.contains('hidden')?openEditor():closeEditor());
 function openEditor(){
   for(let key in fields){
     if(key==='membersGrid') continue;
-    inputs[key].value = fields[key].textContent || fields[key].src || '';
+    inputs[key].value=fields[key].textContent||fields[key].src||'';
   }
-  // Serialize members
-  const memberData = Array.from(fields.membersGrid.querySelectorAll('.member-card')).map(card=>{
-    return {alias: card.querySelector('.member-alias').textContent,
-            role: card.querySelector('.member-role').textContent,
-            img: card.querySelector('img').src};
+  const memberData=Array.from(fields.membersGrid.querySelectorAll('.member-card')).map(card=>{
+    return {alias:card.querySelector('.member-alias').textContent,
+            role:card.querySelector('.member-role').textContent,
+            img:card.querySelector('img').src};
   });
-  inputs.members.value = JSON.stringify(memberData,null,2);
+  inputs.members.value=JSON.stringify(memberData,null,2);
   editor.classList.remove('hidden');
 }
-function closeEditor(){ editor.classList.add('hidden'); }
+function closeEditor(){editor.classList.add('hidden');}
 
-editToggle.addEventListener('click', ()=>editor.classList.contains('hidden')?openEditor():closeEditor());
-
+// Save
 document.getElementById('save-profile').addEventListener('click',()=>{
   for(let key in fields){
     if(key==='membersGrid') continue;
     if(key==='turfMap'){
-      fields[key].src = inputs[key].value || 'map-placeholder.png';
+      fields[key].src=inputs[key].value||'map-placeholder.png';
     }else{
-      fields[key].textContent = inputs[key].value || '—';
+      fields[key].textContent=inputs[key].value||'—';
     }
   }
-  // Update members
+  // Members
   try{
-    const memberData = JSON.parse(inputs.members.value || '[]');
+    const memberData=JSON.parse(inputs.members.value||'[]');
     fields.membersGrid.innerHTML='';
     memberData.forEach(m=>{
       const div=document.createElement('div');
@@ -81,11 +81,11 @@ document.getElementById('save-profile').addEventListener('click',()=>{
   closeEditor();
 });
 
-logoInput.addEventListener('change', evt=>{
-  const f=evt.target.files&&evt.target.files[0];
-  if(!f) return;
-  logoPreview.src=URL.createObjectURL(f);
+// Logo URL update
+logoInput.addEventListener('input',evt=>{
+  const url=evt.target.value.trim();
+  if(url) logoPreview.src=url;
 });
 
 // Last updated
-document.getElementById('last-updated').textContent = `Last updated: ${new Date().toLocaleString()}`;
+document.getElementById('last-updated').textContent=`Last updated: ${new Date().toLocaleString()}`;
