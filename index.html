@@ -933,6 +933,10 @@
         <span class="label">Magazine Capacity</span>
         <span class="value" id="statMag">-</span>
       </div>
+      <div class="stat" id="statPriceRow" style="display:none">
+        <span class="label">Price</span>
+        <span class="value" id="statPrice">-</span>
+      </div>
     </div>
     <button id="closeStats" class="close" aria-label="Close">Close</button>
   </div>
@@ -1218,8 +1222,8 @@
     'Tan Kriss Vector Magazine': { type:'Magazine', capacity:'40 Rounds', compat:'Kriss Platform / Glock Pattern', notes:'Cosmetic Variant' },
     'Drum Magazine': { type:'Magazine', capacity:'50 Rounds', compat:'Handguns', notes:'High Mass' },
     'Tan Drum Magazine': { type:'Magazine', capacity:'50 Rounds', compat:'Handguns', notes:'Cosmetic Variant' },
-    'PMAG Extended Magazine': { type:'Magazine', capacity:'40 Rounds', compat:'5.56 AR/M4', notes:'Polymer' },
-    'PMAG Drum Magazine': { type:'Magazine', capacity:'60 Rounds', compat:'5.56 AR/M4', notes:'High Capacity' }
+    'PMAG Extended Magazine': { type:'Magazine', capacity:'40 Rounds', compat:'Rifles', notes:'Polymer' },
+    'PMAG Drum Magazine': { type:'Magazine', capacity:'60 Rounds', compat:'Rifles', notes:'High Capacity' }
   };
 
   const DRUG_INFO = {
@@ -1253,6 +1257,56 @@
   'Green Pint': { type:'Opioid Syrup', effect:'Sedative', form:'Liquid', notes:'Flavor Variant' },
   'Pai Pint': { type:'Opioid Syrup', effect:'Sedative', form:'Liquid', notes:'Variant' }
 };
+
+  // Drug prices (optional per-item overrides). Value can be a number or string.
+  const DRUG_PRICES = {
+    'RP 10': null,
+    'MBox 10': null,
+    'V 230': null,
+    'K56': null,
+    'M 523': null,
+    'Line of Green': null,
+    'K8': null,
+    'V 48': null,
+    'MBox 15': null,
+    'Green Pint': null,
+    'RP 20': null,
+    'MBox 20': null,
+    'Line of Wockhardt': null,
+    'Line of Pai': null,
+    'Line of Quagen': null,
+    'Line of Tris': null,
+    'MBox 30': null,
+    'RP 30': null,
+    'K9': null,
+    'Superman Pill': null,
+    'Quagen Pint': null,
+    'Tris Pint': null,
+    'Wockhardt Pint': null,
+    'Pai Pint': null,
+  };
+
+  // Default price ranges by rarity
+  const PRICE_BY_RARITY = {
+    common: '$10-$20',
+    uncommon: '$15-$35',
+    rare: '$20-$40',
+    epic: '$30-$50',
+  };
+
+  function formatCurrency(n){
+    try{ return '$' + Number(n).toLocaleString(); }catch{ return '$' + n; }
+  }
+  function getDrugPrice(name, rarity){
+    const p = DRUG_PRICES && DRUG_PRICES[name];
+    if(p !== undefined && p !== null){
+      if(typeof p === 'number') return formatCurrency(p);
+      return String(p);
+    }
+    const r = (rarity || '').toLowerCase();
+    if(PRICE_BY_RARITY && PRICE_BY_RARITY[r]) return PRICE_BY_RARITY[r];
+    return '-';
+  }
 
   function isAttachmentName(name){
     try{ return Array.isArray(ATTACHMENTS) && ATTACHMENTS.some(x => x && x[0] === name); }catch{ return false; }
@@ -1490,6 +1544,7 @@
 
     const effectVal = document.getElementById('statFire');
     const effectCard = effectVal ? effectVal.parentElement : null;
+    const priceRow = document.getElementById('statPriceRow');
 
     if(isAttachmentName(name)){
       const a = ATTACH_INFO[name] || { type:'Attachment', effect:'-', compat:'-', notes:'-' };
@@ -1500,6 +1555,7 @@
         if(isMag){ effectCard.style.display = 'none'; }
         else { effectCard.style.display = ''; setStatField('statFire','Effect', a.effect || '-'); }
       }
+      if(priceRow) priceRow.style.display = 'none';
       if(typeof setBadges === 'function'){ setBadges([]); }
       setStatField('statAmmo','Compatibility', a.compat || '-');
       if(a.capacity){ setStatField('statMag','Capacity', a.capacity); }
@@ -1512,6 +1568,7 @@
       if(effectCard){ effectCard.style.display = ''; setStatField('statFire','Effect', d.effect || '-'); }
       setStatField('statAmmo','Form', d.form || '-');
       setStatField('statMag','Notes', d.notes || '-');
+      if(priceRow){ priceRow.style.display = ''; setStatField('statPrice','Price', getDrugPrice(name, rarity)); }
       if(typeof setBadges === 'function'){ setBadges(d.badges || []); }
     } else {
       // Weapon: no badges
@@ -1523,6 +1580,7 @@
       if(effectCard) effectCard.style.display = '';
       setStatField('statAmmo','Ammo', s.ammo);
       setStatField('statMag','Magazine Capacity', `Reg: ${s.magStd} | Ext: ${s.magExt}`);
+      if(priceRow) priceRow.style.display = 'none';
     }
 
       (function(){ const w = document.getElementById("statBadges"); if(w){ w.dataset.item = ""; } })();
