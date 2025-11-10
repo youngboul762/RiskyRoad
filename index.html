@@ -12,7 +12,7 @@
       <div class="title-block">
         <img id="logo-preview" src="placeholder.png" alt="Faction Logo" width="120" />
         <div>
-          <h1 id="faction-name">Risky Road</h1>
+          <h1 id="faction-name">RiskyRoad</h1>
           <p id="faction-tagline">Fictional roleplay faction dashboard</p>
         </div>
       </div>
@@ -28,15 +28,17 @@
     <!-- Faction Threads -->
     <section id="threads">
       <div class="card faction-card">
-        <h2>Faction Thread — Risky Road</h2>
+        <h2>Faction Thread — RiskyRoad</h2>
         <div class="thread-content">
-          <p><strong>Set:</strong> <span id="profile-set">Risky Road (104th & Maryland)</span></p>
+          <p><strong>Set Name:</strong> <span id="profile-set">RiskyRoad</span></p>
           <p><strong>Main Block:</strong> <span id="profile-main">104th & Maryland</span></p>
-          <p><strong>Notable Blocks:</strong> <span id="profile-notable">105th & Indiana → 107th & Edbrooke</span></p>
-          <p><strong>Faction Composition:</strong> <span id="profile-composition">Predominantly young members guided by experienced leaders. They organize roleplay activities to maintain cohesion and presence.</span></p>
-          <p><strong>Neighborhood:</strong> <span id="profile-neighborhood">Roseland, South Side, Chicago (fictionalized)</span></p>
-          <p><strong>Years Active:</strong> <span id="profile-years">Early 2010s – Present</span></p>
-          <p><strong>Notes:</strong> <span id="profile-notes">Past members honored through murals and creative projects; inspires current members.</span></p>
+          <p><strong>Aliases:</strong> <span id="profile-aliases">10-4 LickSquad, DonnyMobb, BTGang</span></p>
+          <p><strong>Faction Concept:</strong> <span id="profile-concept">Predominantly fictionalized roleplay faction focused on neighborhood protection and creative projects.</span></p>
+          <p><strong>Allies:</strong> <span id="profile-allies">808Mobb/ReapNem, Sneak Gang</span></p>
+          <p><strong>Opponents:</strong> <span id="profile-opps">DottieRoad</span></p>
+          <p><strong>History:</strong> <span id="profile-history">The faction was inspired by community-focused roleplay projects dating back decades, emphasizing protection and collaboration in its territory.</span></p>
+          <p><strong>Neighborhood:</strong> <span id="profile-neighborhood">Roseland, South Side (fictionalized)</span></p>
+          <p><strong>Years Active:</strong> <span id="profile-years">1968 – Present (fictionalized)</span></p>
         </div>
       </div>
     </section>
@@ -47,11 +49,13 @@
       <div class="editor-grid">
         <label>Set name<input id="input-set" type="text" /></label>
         <label>Main block<input id="input-main" type="text" /></label>
-        <label>Notable blocks<input id="input-notable" type="text" /></label>
+        <label>Aliases<input id="input-aliases" type="text" /></label>
         <label>Neighborhood<input id="input-neighborhood" type="text" /></label>
         <label>Years active<input id="input-years" type="text" /></label>
-        <label>Composition<textarea id="input-composition" rows="3"></textarea></label>
-        <label>Notes<textarea id="input-notes" rows="3"></textarea></label>
+        <label>Faction concept<textarea id="input-concept" rows="3"></textarea></label>
+        <label>Allies<textarea id="input-allies" rows="2"></textarea></label>
+        <label>Opponents<textarea id="input-opps" rows="2"></textarea></label>
+        <label>History<textarea id="input-history" rows="3"></textarea></label>
       </div>
       <div class="editor-actions">
         <button id="save-profile">Save</button>
@@ -65,8 +69,7 @@
       <p class="muted">This spinner is fictional and for roleplay purposes only.</p>
       <div class="spinner-controls">
         <select id="category">
-          <option value="contraband">Contraband</option>
-          <option value="supplies">Supplies</option>
+          <option value="supplies">Faction Supplies</option>
           <option value="gear">Faction Gear</option>
         </select>
         <button id="spin">🎰 Spin</button>
