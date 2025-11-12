@@ -15,6 +15,7 @@
     --card-common:#2b2f44;
     --shadow:0 10px 30px rgba(0,0,0,.45);
     --player-height:62px;
+    --opp-glow: rgba(255,56,56,0.9);
   }
 
   *{box-sizing:border-box}
@@ -43,18 +44,14 @@
     transform: scale(1.02);
   }
 
-  .wrap{max-width:1280px; width:100%; margin:0 auto}
+  .wrap{max-width:1280px; width:100%; margin:0 auto; position:relative; z-index:2}
   .topbar {
     position: sticky; top: 0; z-index: 100;
     background: linear-gradient(180deg, rgba(6,6,6,0.98), rgba(10,10,12,0.85));
     border-bottom: 1px solid rgba(255,255,255,0.04);
     backdrop-filter: blur(6px);
   }
-  .top-inner { max-width: 1280px; margin: 0 auto; padding: 12px 22px; display:flex; align-items:center; justify-content:space-between;}
-  .brand { font-size: clamp(20px, 3vw, 28px); font-weight:800; color:var(--text); margin:0; }
-  .brand .accent { color:var(--accent-2); }
-
-  .hero { width:100%; margin-top:14px; z-index:2; position:relative; }
+  .hero { width:100%; margin-top:14px; }
   .hero-inner { padding:28px 20px; position:relative; z-index:2; }
   .hero-logo { position:absolute; top:12px; right:20px; height:88px; border-radius:6px; filter: drop-shadow(0 6px 18px rgba(0,0,0,.6)); }
   .hero-title { margin:0 0 6px 0; font-weight:900; letter-spacing:0.02em; font-size: clamp(28px, 4.4vw, 40px); color: var(--accent-2); }
@@ -74,9 +71,6 @@
   .rr-list { margin:0; padding:0; list-style:none; color:#eaf5ff; }
   .rr-list-item { margin-bottom:10px; }
   .rr-list-title { font-weight:700; color:var(--accent-2); margin-right:8px; }
-
-  /* set-image styling */
-  .set-image { width:100%; max-width:420px; border-radius:10px; display:block; margin:12px 0; border:1px solid rgba(255,255,255,0.04); }
 
   /* watermark bottom center */
   .watermark{ position:fixed; left:50%; bottom:14px; transform:translateX(-50%); z-index:50; pointer-events:auto; font-weight:800; color:var(--accent-2); }
@@ -119,11 +113,40 @@
   .discord-tab a { color:var(--text); text-decoration:none; display:flex; align-items:center; gap:8px; padding: 6px; }
 
   /* Active members grid and modal */
-  #membersGrid { display:grid; gap:12px; grid-template-columns: repeat(auto-fill,minmax(180px,1fr)); margin-top:10px; z-index:2; }
-  .member-card { background: linear-gradient(180deg, rgba(18,18,22,0.9), rgba(14,14,18,0.9)); padding:12px; border-radius:10px; border:1px solid rgba(255,255,255,0.03); cursor:pointer; display:flex; gap:10px; align-items:center; }
-  .member-avatar { width:56px; height:56px; border-radius:8px; object-fit:cover; border:1px solid rgba(255,255,255,0.04); }
-  .member-name { font-weight:800; color:var(--accent-2); font-size:14px; }
-  .member-role { color:var(--muted); font-size:13px; }
+  #membersGrid, #oppsGrid { display:grid; gap:12px; grid-template-columns: repeat(auto-fill,minmax(180px,1fr)); margin-top:10px; z-index:2; }
+  .member-card, .opponent-card {
+    background: linear-gradient(180deg, rgba(18,18,22,0.9), rgba(14,14,18,0.9));
+    padding:12px; border-radius:10px; border:1px solid rgba(255,255,255,0.03);
+    cursor:pointer; display:flex; gap:10px; align-items:center; position:relative; overflow:visible;
+  }
+  .member-avatar, .opponent-avatar { width:56px; height:56px; border-radius:8px; object-fit:cover; border:1px solid rgba(255,255,255,0.04); }
+
+  .member-name, .opponent-name { font-weight:800; color:var(--accent-2); font-size:14px; }
+  .member-role, .opponent-role { color:var(--muted); font-size:13px; }
+
+  /* Fortnite-like red glow outside the opponent boxes */
+  .opponent-card::after {
+    content: "";
+    position: absolute;
+    inset: -6px;
+    border-radius: 14px;
+    z-index: -1;
+    background: radial-gradient(ellipse at center, rgba(255,80,80,0.35) 0%, rgba(255,40,40,0.08) 30%, transparent 60%);
+    filter: blur(10px);
+    opacity: 0.0;
+    transition: opacity .18s ease, transform .18s ease;
+  }
+  .opponent-card:hover::after,
+  .opponent-card.glow {
+    opacity: 1;
+    transform: scale(1.02);
+    animation: pulseGlow 1.6s infinite;
+  }
+  @keyframes pulseGlow {
+    0% { opacity:0.85; transform: scale(1.00); }
+    50% { opacity:0.5; transform: scale(1.04); }
+    100% { opacity:0.85; transform: scale(1.00); }
+  }
 
   .modal-backdrop { position:fixed; inset:0; display:none; place-items:center; background: rgba(0,0,0,0.6); z-index:10003; }
   .modal-backdrop.show { display:grid; }
@@ -137,14 +160,12 @@
   @media (max-width:420px){
     .player{ left:12px; right:12px; min-width:auto; height:56px; }
     .vol input[type=range]{ display:none; }
-    .member-avatar{ width:48px; height:48px; }
-    .set-image { max-width:100%; }
+    .member-avatar, .opponent-avatar{ width:48px; height:48px; }
   }
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
-  <!-- animated GIF background -->
   <div class="page-bg" aria-hidden="true"></div>
 
   <div class="wrap">
@@ -155,7 +176,6 @@
         <p class="hero-sub">Welcome — enjoy the showcase.</p>
 
         <nav class="nav" aria-label="Main navigation">
-          <!-- label changed to Set Profile -->
           <a class="nav-link active" data-tab="riskyroad" href="#"><i class="fa-solid fa-road"></i> Set Profile</a>
           <a class="nav-link" data-tab="faction" href="#"><i class="fa-solid fa-users"></i> Faction Showcase</a>
           <a class="nav-link" data-tab="activemembers" href="#"><i class="fa-solid fa-id-card"></i> Active Members</a>
@@ -164,35 +184,20 @@
       </div>
     </section>
 
-    <!-- Set Profile (replaced content as requested) -->
+    <!-- Set Profile (image removed as requested) -->
     <div id="riskyroad" class="nav-section active">
       <div class="section-card">
         <div class="section-title">Risky Road (4CH)</div>
-
-        <!-- Replaced content exactly as requested -->
         <ul class="rr-list">
           <li class="rr-list-item"><span class="rr-list-title">Set:</span> Risky Road (104th &amp; Maryland)</li>
-
-          <!-- Uploaded image shown here (uses the hero logo GIF as the uploaded image placeholder) -->
-          <li class="rr-list-item">
-            <img class="set-image" src="https://i.ibb.co/C3gpNWgG/RISKY-BANDS-x-LIL-QUISSY-HOT-CARS-OFFICIAL-VIDEO-EA-4-K-FILMS.gif" alt="Uploaded image">
-          </li>
-
           <li class="rr-list-item"><span class="rr-list-title">Main Block:</span> 104th &amp; Maryland</li>
           <li class="rr-list-item"><span class="rr-list-title">Notable Blocks:</span> 105th &amp; Indiana → 107th &amp; Edbrooke</li>
-
           <li class="rr-list-item"><span class="rr-list-title">Gang Composition:</span> Predominantly composed of younger members tied to the Four Corner Hustlers (4CH) structure, guided by older OGs who’ve maintained presence in Roseland since the early 2010s. The younger generation keeps the block active through both street and social activity, while the older heads provide structure, discipline, and leadership to keep the Road organized and respected.</li>
-
           <li class="rr-list-item"><span class="rr-list-title">Area Formerly Controlled By:</span> Smaller 4CH-affiliated crews and independent neighborhood figures before Risky Road unified the area under the same name.</li>
-
           <li class="rr-list-item"><span class="rr-list-title">Neighborhood:</span> Roseland, South Side, Chicago, Illinois</li>
-
           <li class="rr-list-item"><span class="rr-list-title">Deceased Members:</span> Several fallen members have left their mark on the neighborhood, honored through murals, candles, and social media tributes. Their memory serves as motivation for the younger generation to keep the Road’s name alive.</li>
-
           <li class="rr-list-item"><span class="rr-list-title">Rappers:</span> A handful of active members have stepped into Chicago’s local drill and trap music scene, releasing songs inspired by the Road’s daily life, struggles, and neighborhood pride. Their music has built local buzz, with tracks circulating through platforms like YouTube and SoundCloud, further solidifying the set’s identity and presence online.</li>
-
           <li class="rr-list-item"><span class="rr-list-title">Allies:</span> Primarily aligned with other Four Corner Hustler sets across the South and West Sides. Some neutral or respectful ties with select BD and unaffiliated neighborhood crews.</li>
-
           <li class="rr-list-item"><span class="rr-list-title">Years Active:</span> Early 2010s – Present.</li>
         </ul>
       </div>
@@ -205,7 +210,7 @@
       </div>
     </div>
 
-    <!-- Active Members (unchanged from previous but cards are present) -->
+    <!-- Active Members -->
     <div id="activemembers" class="nav-section">
       <div class="section-card">
         <div class="section-title">Active Members</div>
@@ -213,12 +218,12 @@
       </div>
     </div>
 
-    <!-- Opps tab and content added -->
+    <!-- Opps: each opponent is a box that shows its street on click; boxes glow red -->
     <div id="opps" class="nav-section">
       <div class="section-card">
         <div class="section-title">Opps</div>
         <p><strong>Currently above:</strong> BloodHound/79, DottieRoad, NLMB, ShortyMobb.</p>
-        <p>Use this space to add further notes about oppositions, rival sets, or situational intel.</p>
+        <div id="oppsGrid" aria-live="polite"></div>
       </div>
     </div>
 
@@ -235,7 +240,7 @@
     </a>
   </div>
 
-  <!-- Hidden YouTube iframe player (audio source) -->
+  <!-- Hidden YouTube iframe player -->
   <div id="yt-player-wrap" style="width:0;height:0;overflow:hidden;position:fixed;left:-9999px;top:-9999px;">
     <div id="yt-player"></div>
   </div>
@@ -276,7 +281,7 @@
   <!-- Unmute / Play fallback -->
   <button id="unmuteBtn" class="unmute" aria-hidden="true" title="Enable music"><i class="fa-solid fa-volume-high"></i><span style="min-width:6ch">Play</span></button>
 
-  <!-- Member modal -->
+  <!-- Member modal (re-used for members) -->
   <div id="modalBackdrop" class="modal-backdrop" role="dialog" aria-hidden="true">
     <div class="modal" role="document">
       <button class="close-btn" id="modalClose" aria-label="Close profile">&times;</button>
@@ -288,8 +293,18 @@
     </div>
   </div>
 
+  <!-- Opp modal (shows street name) -->
+  <div id="oppModalBackdrop" class="modal-backdrop" role="dialog" aria-hidden="true">
+    <div class="modal" role="document">
+      <button class="close-btn" id="oppModalClose" aria-label="Close">&times;</button>
+      <h3 id="oppModalName">Opp</h3>
+      <p><strong>Street:</strong> <span id="oppModalStreet">—</span></p>
+      <p style="color:var(--muted);font-size:13px;margin-top:8px;">Click outside or press Esc to close.</p>
+    </div>
+  </div>
+
 <script>
-/* Members data */
+/* ---------- Active members data (unchanged) ---------- */
 const members = [
   {
     id: 'm1',
@@ -367,7 +382,65 @@ document.getElementById('modalBackdrop').addEventListener('click', (e) => { if (
 
 renderMembersGrid();
 
-/* Tabs behavior */
+/* ---------- Opponents data & UI ---------- */
+/* The streets provided:
+   - BloodHound/79  -> East 79th and South Maryland
+   - ShortyMobb     -> East 79th and South Maryland
+   - NLMB           -> 78th and Muskegon
+   - DottieRoad     -> 72nd & Coles Avenue
+*/
+const opponents = [
+  { id: 'o1', name: 'BloodHound/79', role: 'Opposing set', street: 'East 79th and South Maryland', avatar: 'https://i.pravatar.cc/150?img=5' },
+  { id: 'o2', name: 'ShortyMobb', role: 'Opposing set', street: 'East 79th and South Maryland', avatar: 'https://i.pravatar.cc/150?img=6' },
+  { id: 'o3', name: 'NLMB', role: 'Opposing set', street: '78th and Muskegon', avatar: 'https://i.pravatar.cc/150?img=7' },
+  { id: 'o4', name: 'DottieRoad', role: 'Opposing set', street: '72nd & Coles Avenue', avatar: 'https://i.pravatar.cc/150?img=9' }
+];
+
+function renderOppsGrid() {
+  const grid = document.getElementById('oppsGrid');
+  grid.innerHTML = '';
+  opponents.forEach(o => {
+    const card = document.createElement('div');
+    card.className = 'opponent-card';
+    card.tabIndex = 0;
+    card.dataset.id = o.id;
+    card.innerHTML = `
+      <img class="opponent-avatar" src="${o.avatar}" alt="${o.name} avatar">
+      <div style="min-width:0">
+        <div class="opponent-name">${o.name}</div>
+        <div class="opponent-role">${o.role}</div>
+      </div>
+    `;
+    // add persistent glow class so they always have the red outer glow
+    card.classList.add('glow');
+    card.addEventListener('click', () => openOppModal(o.id));
+    card.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openOppModal(o.id); } });
+    grid.appendChild(card);
+  });
+}
+
+function openOppModal(id) {
+  const o = opponents.find(x => x.id === id);
+  if (!o) return;
+  document.getElementById('oppModalName').textContent = o.name;
+  document.getElementById('oppModalStreet').textContent = o.street;
+  const backdrop = document.getElementById('oppModalBackdrop');
+  backdrop.classList.add('show');
+  backdrop.setAttribute('aria-hidden','false');
+  document.getElementById('oppModalClose').focus();
+}
+
+function closeOppModal() {
+  const backdrop = document.getElementById('oppModalBackdrop');
+  backdrop.classList.remove('show');
+  backdrop.setAttribute('aria-hidden','true');
+}
+document.getElementById('oppModalClose').addEventListener('click', closeOppModal);
+document.getElementById('oppModalBackdrop').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeOppModal(); });
+
+renderOppsGrid();
+
+/* ---------- Tabs behavior ---------- */
 document.querySelectorAll('.nav-link').forEach(link=>{
   link.addEventListener('click', e=>{
     e.preventDefault();
@@ -380,18 +453,11 @@ document.querySelectorAll('.nav-link').forEach(link=>{
   });
 });
 
-/* YouTube playlist + player UI
-   Playlist tracks:
-   - A2h-dN8fWFQ
-   - 5EgOq543xH0
-   - ZcDObWYToXY (added as requested)
-   - ZcDObWYToXY (duplicate added per provided links)
-*/
+/* ---------- YouTube playlist + player UI (keeps previous playlist behavior) ---------- */
 const ytPlaylist = [
   { id: 'A2h-dN8fWFQ', title: 'Track 1' },
   { id: '5EgOq543xH0', title: 'Track 2' },
-  { id: 'ZcDObWYToXY', title: 'Track 3' },
-  { id: 'ZcDObWYToXY', title: 'Track 4' }
+  { id: 'ZcDObWYToXY', title: 'Track 3' }
 ];
 
 let ytPlayer = null;
@@ -402,7 +468,7 @@ let loopCurrent = false;
 let autoplayAttempts = 0;
 const MAX_AUTOPLAY_ATTEMPTS = 12;
 
-/* load YouTube Iframe API */
+/* load YT Iframe API */
 (function loadYT(){
   if (window.YT && window.YT.Player) { onYouTubeIframeAPIReady(); return; }
   const tag = document.createElement('script');
@@ -559,7 +625,7 @@ window.addEventListener('keydown', (e)=> {
   }
 });
 
-/* initialize UI text */
+/* initialize UI */
 updateTrackMeta();
 
 /* cleanup */
